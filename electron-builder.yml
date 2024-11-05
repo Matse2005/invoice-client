@@ -1,5 +1,5 @@
-appId: be.matsevh.simpele-facturen
-productName: Simpele Facturen
+appId: be.matsevh.facturen
+productName: Facturen
 copyright: Copyright © 2024 MatseVH
 directories:
   output: dist
@@ -9,10 +9,8 @@ files:
     filter:
       - package.json
       - app
-# publish:
-#   - provider: github
-#     repository: your-repo-owner/your-repo-name
-#     protocol: https
+publish:
+  - provider: github
 win:
   target:
     - dir

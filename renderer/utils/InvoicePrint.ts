@@ -53,13 +53,13 @@ export const useInvoicePrinting = () => {
   const getPrintersList = async () => {
     try {
       // Fetch printer list using PrintersService
-      const response = await PrintersService.fetchPrinters();
-      const printers = await response.json();
-      setPrintProgress(prev => ({
-        ...prev,
-        availablePrinters: printers,
-        status: 'ready'
-      }));
+      // const response = await PrintersService.fetchPrinters();
+      // const printers = await response.json();
+      // setPrintProgress(prev => ({
+      //   ...prev,
+      //   availablePrinters: printers,
+      //   status: 'ready'
+      // }));
     } catch (e) {
       setError('Er is iets misgegaan bij het ophalen van de printers.');
       console.error('Error fetching printers:', e);

@@ -48,15 +48,18 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const handleClientChange = (field: string, value: string) => {
     if (field.startsWith("address")) {
       const index = parseInt(field.slice(-1));
-      setInvoiceData((prev) => ({
-        ...prev,
-        client: {
-          ...prev.client,
-          address: prev.client.address.map((addr, i) =>
-            i === index ? value : addr
-          ),
-        },
-      }));
+      setInvoiceData((prev) => {
+        const newAddress = [...prev.client.address] as [string, string, string];
+        newAddress[index] = value;
+
+        return {
+          ...prev,
+          client: {
+            ...prev.client,
+            address: newAddress,
+          },
+        };
+      });
     } else {
       setInvoiceData((prev) => ({
         ...prev,
