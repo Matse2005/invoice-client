@@ -5,6 +5,7 @@ import { createWindow } from './helpers'
 import fs from 'fs'
 import os from 'os'
 import { setupInvoiceHandlers } from './helpers/invoice-handler'
+import { setupSettingsHandlers } from './helpers/settings-handler'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -36,6 +37,7 @@ if (isProd) {
   }
 
   setupInvoiceHandlers();
+  setupSettingsHandlers();
 
   // IPC listeners for window control
   mainWindow.on('maximize', () => mainWindow.webContents.send('window-maximized'));

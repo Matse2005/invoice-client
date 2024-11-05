@@ -1,92 +1,90 @@
+// services/InvoicesService.ts
 import { Invoice } from "../types";
 
-const getAll = async () => {
-  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": process.env.NEXT_PUBLIC_API_KEY
-    },
-  });
+class InvoicesService {
+  private static instance: InvoicesService;
+  private settings: { apiUrl: string; apiKey: string } | null = null;
+
+  private constructor() { }
+
+  public static getInstance(): InvoicesService {
+    if (!InvoicesService.instance) {
+      InvoicesService.instance = new InvoicesService();
+    }
+    return InvoicesService.instance;
+  }
+
+  private async getSettings() {
+    if (!this.settings) {
+      this.settings = await window.ipc.invoke('get-settings');
+      if (!this.settings?.apiUrl || !this.settings?.apiKey) {
+        throw new Error('API settings not configured. Please check your settings.');
+      }
+    }
+    return this.settings;
+  }
+
+  private async fetchWithAuth(endpoint: string, options: RequestInit = {}) {
+    const settings = await this.getSettings();
+    const url = `${settings.apiUrl}/${endpoint.replace(/^\//, '')}`;
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': settings.apiKey,
+      ...(options.headers || {})
+    };
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response;
+    } catch (error) {
+      console.error(`API request failed (${endpoint}):`, error);
+      throw error;
+    }
+  }
+
+  async getAll() {
+    return this.fetchWithAuth('invoices');
+  }
+
+  async getById({ id }: { id: number }) {
+    return this.fetchWithAuth(`invoices/${id}`);
+  }
+
+  async store(invoiceData: any) {
+    return this.fetchWithAuth('invoices', {
+      method: 'POST',
+      body: JSON.stringify(invoiceData)
+    });
+  }
+
+  async update(id: number, invoice: Invoice) {
+    return this.fetchWithAuth(`invoices/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(invoice)
+    });
+  }
+
+  async deleteInvoice(id: number) {
+    return this.fetchWithAuth(`invoices/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async fetchPdf(id: number) {
+    return this.fetchWithAuth(`invoices/request-link/${id}`, {
+      method: 'POST'
+    });
+  }
 }
 
-const getById = async ({ id }: { id: number }) => {
-  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": process.env.NEXT_PUBLIC_API_KEY
-    },
-  });
-}
-
-const store = async (invoiceData) => {
-  try {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": process.env.NEXT_PUBLIC_API_KEY,
-      },
-      body: JSON.stringify(invoiceData),
-    });
-  } catch (error) {
-    console.error("Failed to store the invoice:", error);
-    throw error;
-  }
-};
-
-const update = async (id: number, invoice: Invoice) => {
-  try {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": process.env.NEXT_PUBLIC_API_KEY,
-      },
-      body: JSON.stringify(invoice),
-    });
-  } catch (error) {
-    console.error("Failed to store the invoice:", error);
-    throw error;
-  }
-};
-
-const deleteInvoice = async (id: number) => {
-  try {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": process.env.NEXT_PUBLIC_API_KEY,
-      },
-    });
-  } catch (error) {
-    console.error("Failed to store the invoice:", error);
-    throw error;
-  }
-};
-
-const fetchPdf = async (id: number) => {
-  try {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices/request-link/${id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": process.env.NEXT_PUBLIC_API_KEY,
-      },
-    });
-  } catch (error) {
-    console.error("Failed to fetch the invoice pdf:", error);
-    throw error;
-  }
-}
-
-export default {
-  getAll,
-  getById,
-  store,
-  deleteInvoice,
-  update,
-  fetchPdf
-}
+// Export a singleton instance
+export default InvoicesService.getInstance();

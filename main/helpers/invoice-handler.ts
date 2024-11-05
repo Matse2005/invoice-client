@@ -4,9 +4,8 @@ import path from 'path';
 import os from 'os';
 
 interface InvoiceParams {
-  invoiceId: number;
+  invoiceId: number,
   url: string;
-  apiKey: string;
 }
 
 interface PrintParams extends InvoiceParams {
@@ -23,16 +22,11 @@ interface InvoiceProgress {
 const fetchAndSavePDF = async (
   invoiceId: number,
   url: string,
-  apiKey: string,
   event: Electron.IpcMainEvent,
   progressCallback: (progress: InvoiceProgress) => void,
   savePath?: string
 ): Promise<string | undefined> => {
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': apiKey,
-    },
-  });
+  const response = await fetch(url);
 
   const totalSize = Number(response.headers.get('content-length'));
   const chunks: Uint8Array[] = [];
@@ -75,12 +69,12 @@ const fetchAndSavePDF = async (
 };
 
 const handleInvoiceShare = async (event: Electron.IpcMainEvent, params: InvoiceParams) => {
-  const { invoiceId, url, apiKey } = params;
+  const { invoiceId, url } = params;
 
   try {
     event.reply('invoice:share-progress', { status: 'downloading', progress: 0 });
 
-    const tempPath = await fetchAndSavePDF(invoiceId, url, apiKey, event, (progress) => {
+    const tempPath = await fetchAndSavePDF(invoiceId, url, event, (progress) => {
       event.reply('invoice:share-progress', progress);
     }, path.join(os.tmpdir(), `invoice-${invoiceId}.pdf`));
 
@@ -111,7 +105,7 @@ const handleInvoiceShare = async (event: Electron.IpcMainEvent, params: InvoiceP
 };
 
 const handleInvoiceDownload = async (event: Electron.IpcMainEvent, params: InvoiceParams) => {
-  const { invoiceId, url, apiKey } = params;
+  const { invoiceId, url } = params;
 
   try {
     const { canceled, filePath } = await dialog.showSaveDialog({
@@ -127,7 +121,7 @@ const handleInvoiceDownload = async (event: Electron.IpcMainEvent, params: Invoi
 
     event.reply('invoice:download-progress', { status: 'downloading', progress: 0 });
 
-    await fetchAndSavePDF(invoiceId, url, apiKey, event, (progress) => {
+    await fetchAndSavePDF(invoiceId, url, event, (progress) => {
       event.reply('invoice:download-progress', progress);
     }, filePath);
 
@@ -151,12 +145,12 @@ const handleGetPrinters = (event: Electron.IpcMainEvent) => {
 };
 
 const handlePrintInvoice = async (event: Electron.IpcMainEvent, params: PrintParams) => {
-  const { invoiceId, url, apiKey, printerName, copies } = params;
+  const { invoiceId, url, printerName, copies } = params;
 
   try {
     event.reply('invoice:print-progress', { status: 'fetching', progress: 0 });
 
-    const tempPath = await fetchAndSavePDF(invoiceId, url, apiKey, event, (progress) => {
+    const tempPath = await fetchAndSavePDF(invoiceId, url, event, (progress) => {
       event.reply('invoice:print-progress', progress);
     }, path.join(os.tmpdir(), `invoice-${invoiceId}-print.pdf`));
 

@@ -225,7 +225,7 @@ const ShowPage = () => {
               </span>
             </button> */}
 
-              <button
+              {/* <button
                 onClick={handlePrint}
                 className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               >
@@ -235,29 +235,18 @@ const ShowPage = () => {
                   </svg>
                   Afdrukken
                 </span>
-              </button>
+              </button> */}
 
-              {/* <button
-              onClick={handleDownload}
-              className="px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
-            >
-              <span className="flex items-center">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Download
-              </span>
-            </button> */}
               <DownloadInvoiceButton
                 invoiceId={invoice.id}
                 onSuccess={handleShareSuccess}
                 onError={handleShareError}
               />
-              <ShareInvoiceButton
+              {/* <ShareInvoiceButton
                 invoiceId={invoice.id}
                 onSuccess={handleShareSuccess}
                 onError={handleShareError}
-              />
+              /> */}
             </div>
             <div className="h-screen max-h-[600px] relative">
               <iframe

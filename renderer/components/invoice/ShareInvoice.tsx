@@ -30,15 +30,15 @@ const ShareInvoiceButton: React.FC<ShareInvoiceButtonProps> = ({
   const getButtonText = () => {
     switch (shareProgress.status) {
       case 'downloading':
-        return `Downloading... ${Math.round(shareProgress.progress || 0)}%`;
+        return `Downloaden... ${Math.round(shareProgress.progress || 0)}%`;
       case 'preparing':
-        return 'Preparing...';
+        return 'Voorbereiden...';
       case 'ready':
-        return 'Share Invoice';
+        return 'Delen';
       case 'error':
-        return 'Try Again';
+        return 'Probleem opnieuw';
       default:
-        return 'Share Invoice';
+        return 'Delen';
     }
   };
 
