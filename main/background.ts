@@ -53,6 +53,8 @@ if (isProd) {
     mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
   });
   ipcMain.on('window-close', () => mainWindow.close());
+
+  // IPC listener for version
 })()
 
 app.on('window-all-closed', () => {
@@ -62,6 +64,10 @@ app.on('window-all-closed', () => {
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
+
+ipcMain.handle('get-version', () => {
+  return app.getVersion();
+});
 
 ipcMain.handle('share-invoice', async (event, { invoiceId, apiUrl, apiKey }) => {
   try {

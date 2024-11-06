@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer, IpcRendererEvent, app } from 'electron';
 
 const handler = {
   send(channel: string, value: unknown = null) {
@@ -15,6 +15,9 @@ const handler = {
       ipcRenderer.removeListener(channel, subscription);
     };
   },
+  getVersion() {
+    return ipcRenderer.invoke('get-version');
+  }
 };
 
 contextBridge.exposeInMainWorld('ipc', handler);
