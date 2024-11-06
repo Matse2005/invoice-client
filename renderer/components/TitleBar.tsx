@@ -1,16 +1,25 @@
 import { useState, useEffect } from 'react';
 import { XMarkIcon, Square2StackIcon, StopIcon, Cog6ToothIcon, InformationCircleIcon, MinusIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 
 const TitleBar = () => {
   const router = useRouter();
   const [isMaximized, setIsMaximized] = useState(false);
-  const [version, setVersion] = useState<string>('');
+  const [version, setVersion] = useState('');
+  const [isChecking, setIsChecking] = useState(false);
 
   const minimizeWindow = () => window.ipc.send('window-minimize');
   const maximizeWindow = () => window.ipc.send('window-maximize');
   const closeWindow = () => window.ipc.send('window-close');
   const openSettings = () => router.push('/settings');
+
+  const checkForUpdates = () => {
+    setIsChecking(true);
+    window.ipc.send('check-for-updates');
+    // Reset checking state after 10 seconds in case no response is received
+    setTimeout(() => setIsChecking(false), 10000);
+  };
 
   useEffect(() => {
     const getVersion = async () => {
@@ -21,10 +30,12 @@ const TitleBar = () => {
 
     const unsubMaximize = window.ipc.on('window-maximized', () => setIsMaximized(true));
     const unsubUnmaximize = window.ipc.on('window-unmaximized', () => setIsMaximized(false));
+    const unsubUpdateMessage = window.ipc.on('message', () => setIsChecking(false));
 
     return () => {
       unsubMaximize();
       unsubUnmaximize();
+      unsubUpdateMessage();
     };
   }, []);
 
@@ -39,6 +50,14 @@ const TitleBar = () => {
           >
             <Cog6ToothIcon className="w-4 h-4" />
             <span>Instellingen</span>
+          </button>
+          <button
+            onClick={checkForUpdates}
+            disabled={isChecking}
+            className="flex items-center gap-1.5 px-2 py-1 text-xs rounded-md hover:text-foreground-hover hover:bg-background-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ArrowDownTrayIcon className={`w-4 h-4 ${isChecking ? 'animate-bounce' : ''}`} />
+            <span>{isChecking ? 'Controleren...' : 'Updates'}</span>
           </button>
           <div className="flex items-center gap-1.5 px-2 py-1 text-xs border-l border-border">
             <InformationCircleIcon className="w-3.5 h-3.5" />
