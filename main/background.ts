@@ -33,6 +33,8 @@ if (isProd) {
     },
   })
 
+  mainWindow.maximize();
+
   if (isProd) {
     await mainWindow.loadURL('app://./home')
   } else {
