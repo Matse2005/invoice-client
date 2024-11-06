@@ -1,10 +1,11 @@
 import { autoUpdater, AppUpdater } from 'electron-updater';
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, app } from 'electron';
 import log from 'electron-log';
 import bytes from 'bytes';
 
 export class AutoUpdaterHelper {
   private appUpdater: AppUpdater;
+  private updateDownloaded: boolean = false;
 
   constructor() {
     this.appUpdater = this.getAutoUpdater();
@@ -20,19 +21,20 @@ export class AutoUpdaterHelper {
     // this.appUpdater.logger.transports.file.level = 'info';
 
     this.appUpdater.on('checking-for-update', () => {
-      this.sendStatusToWindow('Checking for update...');
+      this.sendStatusToWindow('Controleren op updates...');
     });
 
     this.appUpdater.on('update-available', (info) => {
-      this.sendStatusToWindow('Update available.');
+      this.sendStatusToWindow('Update beschikbaar, downloaden...');
+      this.appUpdater.downloadUpdate();
     });
 
     this.appUpdater.on('update-not-available', (info) => {
-      this.sendStatusToWindow('Update not available.');
+      this.sendStatusToWindow('Geen updates beschikbaar.');
     });
 
     this.appUpdater.on('error', (err) => {
-      this.sendStatusToWindow('Error in auto-updater. ' + err);
+      this.sendStatusToWindow('Fout tijdens updaten: ' + err);
     });
 
     this.appUpdater.on('download-progress', (progressObj) => {
@@ -43,13 +45,21 @@ export class AutoUpdaterHelper {
     });
 
     this.appUpdater.on('update-downloaded', (info) => {
-      this.sendStatusToWindow('Update downloaded');
-      this.appUpdater.quitAndInstall(true, true);
+      this.updateDownloaded = true;
+      this.sendStatusToWindow('Update gedownload, klaar voor installatie.');
     });
   }
 
   public checkForUpdatesAndNotify() {
     this.appUpdater.checkForUpdatesAndNotify();
+  }
+
+  public installUpdate() {
+    if (this.updateDownloaded) {
+      this.appUpdater.quitAndInstall(true, true);
+    } else {
+      this.sendStatusToWindow('Geen update beschikbaar om te installeren.');
+    }
   }
 
   private sendStatusToWindow(text: string) {
