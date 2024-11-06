@@ -2,7 +2,7 @@
   "private": true,
   "name": "facturen",
   "description": "Snel en gemakkelijk facturen beheren.",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "author": "MatseVH <matse@vanhorebeek.be>",
   "main": "app/background.js",
   "repository": {
