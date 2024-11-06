@@ -11,6 +11,7 @@ files:
       - app
 publish:
   - provider: github
+    protocol: https
 win:
   target:
     - dir

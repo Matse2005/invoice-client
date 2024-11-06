@@ -6,21 +6,18 @@
   "author": "MatseVH <matse@vanhorebeek.be>",
   "main": "app/background.js",
   "repository": {
-    "type": "https",
-    "url": "https://github.com/Matse2005/invoice-client"
+    "type": "git",
+    "url": "https://github.com/Matse2005/invoice-client.git"
   },
   "scripts": {
     "dev": "nextron",
-    "build": "nextron build",
+    "build": "nextron build --publish always",
+    "build:only": "nextron build",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
-    "electron-serve": "^1.3.0",
-    "electron-store": "^8.2.0",
-    "electron-updater": "^6.3.9",
     "facturen": "file:",
-    "fs": "^0.0.1-security",
     "my-nextron-app": "file:",
     "os": "^0.1.2"
   },
@@ -30,6 +27,10 @@
     "autoprefixer": "^10.4.19",
     "electron": "^31.0.1",
     "electron-builder": "^25.1.8",
+    "electron-log": "^5.2.0",
+    "electron-serve": "^1.3.0",
+    "electron-store": "^10.0.0",
+    "electron-updater": "^6.3.9",
     "next": "^14.2.4",
     "nextron": "^9.1.0",
     "postcss": "^8.4.38",
