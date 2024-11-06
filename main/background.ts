@@ -10,7 +10,6 @@ import { setupSettingsHandlers } from './helpers/settings-handler'
 import { AutoUpdaterHelper } from './helpers/auto-updater';
 
 const autoUpdaterHelper = new AutoUpdaterHelper();
-autoUpdaterHelper.checkForUpdatesAndNotify();
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -42,6 +41,8 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/`)
     mainWindow.webContents.openDevTools()
   }
+
+  autoUpdaterHelper.checkForUpdatesAndNotify();
 
   setupInvoiceHandlers();
   setupSettingsHandlers();
@@ -107,4 +108,8 @@ ipcMain.handle('share-invoice', async (event, { invoiceId, apiUrl, apiKey }) => 
     console.error('Error in share-invoice:', error);
     return { success: false, error: error.message };
   }
+});
+
+ipcMain.on('check-for-updates', () => {
+  autoUpdaterHelper.checkForUpdatesAndNotify();
 });

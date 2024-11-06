@@ -8,6 +8,8 @@ const TitleBar = () => {
   const [isMaximized, setIsMaximized] = useState(false);
   const [version, setVersion] = useState('');
   const [isChecking, setIsChecking] = useState(false);
+  const [updateStatus, setUpdateStatus] = useState('');
+  const [showUpdate, setShowUpdate] = useState(false);
 
   const minimizeWindow = () => window.ipc.send('window-minimize');
   const maximizeWindow = () => window.ipc.send('window-maximize');
@@ -17,8 +19,14 @@ const TitleBar = () => {
   const checkForUpdates = () => {
     setIsChecking(true);
     window.ipc.send('check-for-updates');
+    setUpdateStatus('Controleren op updates...');
     // Reset checking state after 10 seconds in case no response is received
-    setTimeout(() => setIsChecking(false), 10000);
+    setTimeout(() => {
+      if (isChecking) {
+        setIsChecking(false);
+        setUpdateStatus('');
+      }
+    }, 10000);
   };
 
   useEffect(() => {
@@ -30,7 +38,12 @@ const TitleBar = () => {
 
     const unsubMaximize = window.ipc.on('window-maximized', () => setIsMaximized(true));
     const unsubUnmaximize = window.ipc.on('window-unmaximized', () => setIsMaximized(false));
-    const unsubUpdateMessage = window.ipc.on('message', () => setIsChecking(false));
+    const unsubUpdateMessage = window.ipc.on('message', (message: string) => {
+      setUpdateStatus(message);
+      if (!message.includes('Checking') && !message.includes('Downloaded')) {
+        setIsChecking(false);
+      }
+    });
 
     return () => {
       unsubMaximize();
@@ -54,10 +67,15 @@ const TitleBar = () => {
           <button
             onClick={checkForUpdates}
             disabled={isChecking}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs rounded-md hover:text-foreground-hover hover:bg-background-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center group gap-1.5 px-2 py-1 text-xs rounded-md hover:text-foreground-hover hover:bg-background-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed group relative"
           >
             <ArrowDownTrayIcon className={`w-4 h-4 ${isChecking ? 'animate-bounce' : ''}`} />
             <span>{isChecking ? 'Controleren...' : 'Updates'}</span>
+            {updateStatus && (
+              <div className="absolute left-0 z-50 hidden p-2 mt-1 text-xs border rounded-md shadow-lg group-hover:flex top-full bg-background border-border whitespace-nowrap">
+                {updateStatus}
+              </div>
+            )}
           </button>
           <div className="flex items-center gap-1.5 px-2 py-1 text-xs border-l border-border">
             <InformationCircleIcon className="w-3.5 h-3.5" />

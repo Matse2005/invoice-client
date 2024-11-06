@@ -2,7 +2,7 @@
   "private": true,
   "name": "facturen",
   "description": "Snel en gemakkelijk facturen beheren.",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "author": "MatseVH <matse@vanhorebeek.be>",
   "main": "app/background.js",
   "repository": {
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
+    "bytes": "^3.1.2",
     "facturen": "file:",
     "my-nextron-app": "file:",
     "os": "^0.1.2"

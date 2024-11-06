@@ -1,6 +1,7 @@
 import { autoUpdater, AppUpdater } from 'electron-updater';
 import { BrowserWindow } from 'electron';
 import log from 'electron-log';
+import bytes from 'bytes';
 
 export class AutoUpdaterHelper {
   private appUpdater: AppUpdater;
@@ -35,15 +36,15 @@ export class AutoUpdaterHelper {
     });
 
     this.appUpdater.on('download-progress', (progressObj) => {
-      let logMessage = `Download speed: ${progressObj.bytesPerSecond}`;
-      logMessage += ` - Downloaded ${progressObj.percent}%`;
-      logMessage += ` (${progressObj.transferred}/${progressObj.total})`;
+      let logMessage = `Download Snelheid: ${bytes(progressObj.bytesPerSecond)}/s`;
+      logMessage += ` - Gedownload ${progressObj.percent.toFixed(2)}%`;
+      logMessage += ` (${bytes(progressObj.transferred)} / ${bytes(progressObj.total)})`;
       this.sendStatusToWindow(logMessage);
     });
 
     this.appUpdater.on('update-downloaded', (info) => {
       this.sendStatusToWindow('Update downloaded');
-      this.appUpdater.quitAndInstall();
+      this.appUpdater.quitAndInstall(true, true);
     });
   }
 
