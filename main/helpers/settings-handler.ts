@@ -4,7 +4,23 @@ import fs from 'fs';
 import path from 'path';
 import { app } from 'electron';
 
-const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
+const isProd = process.env.NODE_ENV === 'production';
+
+// Define base directory based on environment
+const getBaseDir = () => {
+  if (isProd) {
+    return app.getPath('userData');
+  } else {
+    // Create a development folder in the project root
+    const devDir = path.join(app.getAppPath(), 'dev-data');
+    if (!fs.existsSync(devDir)) {
+      fs.mkdirSync(devDir, { recursive: true });
+    }
+    return devDir;
+  }
+};
+
+const SETTINGS_FILE = path.join(getBaseDir(), 'settings.json');
 
 export const setupSettingsHandlers = () => {
   // Get settings
