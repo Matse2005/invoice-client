@@ -9,7 +9,6 @@ const TitleBar = () => {
   const [version, setVersion] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [updateStatus, setUpdateStatus] = useState('');
-  const [showUpdate, setShowUpdate] = useState(false);
 
   const minimizeWindow = () => window.ipc.send('window-minimize');
   const maximizeWindow = () => window.ipc.send('window-maximize');
@@ -53,59 +52,72 @@ const TitleBar = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-between w-full h-8 select-none text-foreground bg-background">
-      <div className="flex items-center gap-4 pl-4 -webkit-app-region-drag">
-        <span className="text-sm font-medium">Facturen</span>
-        <div className="flex items-center gap-2 -webkit-app-region-no-drag">
-          <button
-            onClick={openSettings}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs rounded-md hover:text-foreground-hover hover:bg-background-hover transition-colors"
-          >
-            <Cog6ToothIcon className="w-4 h-4" />
-            <span>Instellingen</span>
-          </button>
-          <button
-            onClick={checkForUpdates}
-            disabled={isChecking}
-            className="flex items-center group gap-1.5 px-2 py-1 text-xs rounded-md hover:text-foreground-hover hover:bg-background-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed group relative"
-          >
-            <ArrowDownTrayIcon className={`w-4 h-4 ${isChecking ? 'animate-bounce' : ''}`} />
-            <span>{isChecking ? 'Controleren...' : 'Updates'}</span>
-            {updateStatus && (
-              <div className="absolute left-0 z-50 hidden p-2 mt-1 text-xs border rounded-md shadow-lg group-hover:flex top-full bg-background border-border whitespace-nowrap">
-                {updateStatus}
-              </div>
-            )}
-          </button>
-          <div className="flex items-center gap-1.5 px-2 py-1 text-xs border-l border-border">
-            <InformationCircleIcon className="w-3.5 h-3.5" />
-            <span className="">v{version}</span>
+    <div className="relative">
+      <div className="flex items-center justify-between w-full h-8 select-none text-foreground bg-background -webkit-app-region-drag">
+        <div className="flex items-center gap-4 pl-4">
+          <span className="text-sm font-medium -webkit-app-region-drag">Facturen</span>
+          <div className="flex items-center gap-2 -webkit-app-region-no-drag">
+            <button
+              onClick={openSettings}
+              className="flex items-center gap-1.5 px-2 py-1 text-xs rounded-md hover:text-foreground-hover hover:bg-background-hover transition-colors"
+            >
+              <Cog6ToothIcon className="w-4 h-4" />
+              <span>Instellingen</span>
+            </button>
+            <button
+              onClick={checkForUpdates}
+              disabled={isChecking}
+              className="flex items-center group gap-1.5 px-2 py-1 text-xs rounded-md hover:text-foreground-hover hover:bg-background-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed group relative"
+            >
+              <ArrowDownTrayIcon className={`w-4 h-4 ${isChecking ? 'animate-bounce' : ''}`} />
+              <span>{isChecking ? 'Controleren...' : 'Updates'}</span>
+              {updateStatus && (
+                <div className="absolute left-0 z-50 hidden p-2 mt-1 text-xs border rounded-md shadow-lg group-hover:flex top-full bg-background border-border whitespace-nowrap">
+                  {updateStatus}
+                </div>
+              )}
+            </button>
+            <div className="flex items-center gap-1.5 px-2 py-1 text-xs border-l border-border">
+              <InformationCircleIcon className="w-3.5 h-3.5" />
+              <span className="">v{version}</span>
+            </div>
           </div>
         </div>
+        <div className="flex -webkit-app-region-no-drag">
+          <button
+            onClick={minimizeWindow}
+            className="flex items-center justify-center w-10 h-8 transition-colors hover:text-foreground-hover hover:bg-background-hover"
+          >
+            <MinusIcon className="w-4 h-4" />
+          </button>
+          <button
+            onClick={maximizeWindow}
+            className="flex items-center justify-center w-10 h-8 transition-colors hover:text-foreground-hover hover:bg-background-hover"
+          >
+            {isMaximized ? (
+              <Square2StackIcon className="w-4 h-4 scale-x-[-1]" />
+            ) : (
+              <StopIcon className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            onClick={closeWindow}
+            className="flex items-center justify-center w-10 h-8 transition-colors hover:bg-red-600 hover:text-white"
+          >
+            <XMarkIcon className="w-4 h-4" />
+          </button>
+        </div>
       </div>
-      <div className="flex -webkit-app-region-no-drag">
-        <button
-          onClick={minimizeWindow}
-          className="flex items-center justify-center w-10 h-8 transition-colors hover:text-foreground-hover hover:bg-background-hover"
-        >
-          <MinusIcon className="w-4 h-4" />
-        </button>
-        <button
-          onClick={maximizeWindow}
-          className="flex items-center justify-center w-10 h-8 transition-colors hover:text-foreground-hover hover:bg-background-hover"
-        >
-          {isMaximized ? (
-            <Square2StackIcon className="w-4 h-4 scale-x-[-1]" />
-          ) : (
-            <StopIcon className="w-4 h-4" />
-          )}
-        </button>
-        <button
-          onClick={closeWindow}
-          className="flex items-center justify-center w-10 h-8 transition-colors hover:bg-red-600 hover:text-white"
-        >
-          <XMarkIcon className="w-4 h-4" />
-        </button>
+      {/* Resize handles */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-1 cursor-ns-resize"></div>
+        <div className="absolute top-0 left-0 w-1 h-full cursor-ew-resize"></div>
+        <div className="absolute top-0 right-0 w-1 h-full cursor-ew-resize"></div>
+        <div className="absolute bottom-0 left-0 w-full h-1 cursor-ns-resize"></div>
+        <div className="absolute top-0 left-0 w-2 h-2 cursor-nwse-resize"></div>
+        <div className="absolute top-0 right-0 w-2 h-2 cursor-nesw-resize"></div>
+        <div className="absolute bottom-0 left-0 w-2 h-2 cursor-nesw-resize"></div>
+        <div className="absolute bottom-0 right-0 w-2 h-2 cursor-nwse-resize"></div>
       </div>
     </div>
   );

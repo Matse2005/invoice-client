@@ -26,7 +26,7 @@ class InvoicesService {
 
   private async fetchWithAuth(endpoint: string, options: RequestInit = {}) {
     const settings = await this.getSettings();
-    const url = `${settings.apiUrl}/${endpoint.replace(/^\//, '')}`;
+    const url = `${settings.apiUrl}/api/${endpoint.replace(/^\//, '')}`;
 
     const headers = {
       'Content-Type': 'application/json',

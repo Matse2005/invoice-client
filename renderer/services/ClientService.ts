@@ -1,6 +1,4 @@
 // services/ClientService.ts
-import { Client } from "../types";
-
 class ClientService {
   private static instance: ClientService;
   private settings: { apiUrl: string; apiKey: string } | null = null;
@@ -26,7 +24,7 @@ class ClientService {
 
   private async fetchWithAuth(endpoint: string, options: RequestInit = {}) {
     const settings = await this.getSettings();
-    const url = `${settings.apiUrl}/${endpoint.replace(/^\//, '')}`;
+    const url = `${settings.apiUrl}/api/${endpoint.replace(/^\//, '')}`;
 
     const headers = {
       'Content-Type': 'application/json',

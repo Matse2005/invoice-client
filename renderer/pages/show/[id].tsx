@@ -5,13 +5,13 @@ import { Invoice } from '../../types';
 import { useRouter } from 'next/router';
 import ShareInvoiceButton from '../../components/invoice/ShareInvoice';
 import DownloadInvoiceButton from '../../components/invoice/DownloadInvoice';
+import InvoicePDF from '../../components/invoice/InvoicePDF';
 
 const ShowPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const [invoice, setInvoice] = useState<Invoice>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadingIFrame, setLoadingIFrame] = useState<boolean>(true);
   const [error, setError] = useState('');
   const [pdfUrl, setPdfUrl] = useState<string>('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -248,21 +248,7 @@ const ShowPage = () => {
                 onError={handleShareError}
               /> */}
             </div>
-            <div className="h-screen max-h-[600px] relative">
-              <iframe
-                src={pdfUrl}
-                title={`Factuur #${invoice.number}`}
-                className="w-full h-full border-0 rounded"
-                onLoad={() => setLoadingIFrame(false)}
-              >
-                <p>Je browser ondersteunt geen PDF-weergave. <a href={pdfUrl}>Download het PDF-bestand</a>.</p>
-              </iframe>
-              {loadingIFrame && (
-                <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
-                  <div className="w-8 h-8 border-4 border-blue-500 rounded-full border-t-transparent animate-spin" />
-                </div>
-              )}
-            </div>
+            <InvoicePDF url={pdfUrl} number={invoice.number} />
           </div>
         </div>
       </div>
